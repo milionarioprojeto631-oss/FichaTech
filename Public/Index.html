@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FichaTech — Gerador de Ficha Técnica</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --primary: #a9745a;
+    --primary-dark: #8a5c45;
+    --primary-light: #c4977c;
+    --accent: #f39c12;
+    --bg: #f4f6f9;
+    --surface: #ffffff;
+    --border: #e1e6ed;
+    --text: #1c2b3a;
+    --muted: #6b7c93;
+    --success: #1ea672;
+    --ml: #ffe600;
+    --shopee: #ee4d2d;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* Header — estilo Macedo */
+  header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    padding: 28px 20px 32px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(169,116,90,0.25);
+  }
+
+  .logo {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  header h1 {
+    font-size: clamp(20px, 5vw, 28px);
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  header p {
+    color: rgba(255,255,255,0.75);
+    margin-top: 6px;
+    font-size: 13px;
+  }
+
+  .container {
+    padding: 20px 16px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(15,30,50,0.04);
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    background: #fdfbfa;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 14px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(196,151,124,0.18);
+  }
+
+  input[type="text"]::placeholder {
+    color: var(--muted);
+    opacity: 0.7;
+  }
+
+  .scanner-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #f7efe9;
+    border: 1.5px dashed var(--primary-light);
+    border-radius: 10px;
+    padding: 13px 14px;
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .scanner-btn:hover {
+    background: #f0e3da;
+  }
+
+  .format-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .format-btn {
+    flex: 1;
+    padding: 11px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .format-btn.ml.active {
+    border-color: #d4b800;
+    background: #fffbe0;
+    color: #8a7600;
+  }
+
+  .format-btn.shopee.active {
+    border-color: var(--shopee);
+    background: #fff0ed;
+    color: var(--shopee);
+  }
+
+  .format-btn.ambos.active {
+    border-color: var(--primary);
+    background: #f3e7df;
+    color: var(--primary);
+  }
+
+  .generate-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 12px rgba(169,116,90,0.25);
+  }
+
+  .generate-btn:hover:not(:disabled) {
+    background: var(--primary-light);
+    transform: translateY(-1px);
+  }
+
+  .generate-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Loading */
+  .loading {
+    display: none;
+    text-align: center;
+    padding: 32px;
+  }
+
+  .loading.visible { display: block; }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+    max-width: 280px;
+    margin: 16px auto 0;
+  }
+
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--muted);
+    transition: color 0.3s;
+  }
+
+  .step.active { color: var(--text); font-weight: 600; }
+  .step.done { color: var(--success); }
+
+  .step-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+
+  .step.active .step-dot { background: var(--primary); }
+  .step.done .step-dot { background: var(--success); }
+
+  /* Result */
+  .result-area { display: none; }
+  .result-area.visible { display: block; }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .result-tag {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+  }
+
+  .tag-ml { background: #fff8d6; color: #8a7600; }
+  .tag-shopee { background: #ffe6e0; color: var(--shopee); }
+
+  .copy-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .copy-btn:hover { color: var(--primary); border-color: var(--primary-light); }
+  .copy-btn.copied { color: var(--success); border-color: var(--success); }
+
+  /* ===== Ficha profissional (estilo anúncio real) ===== */
+  .ficha {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 10px rgba(15,30,50,0.05);
+  }
+
+  .ficha-banner {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: #fff;
+    padding: 18px 20px;
+  }
+
+  .ficha-titulo {
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.35;
+  }
+
+  .ficha-body { padding: 20px; }
+
+  .ficha-section { margin-bottom: 22px; }
+  .ficha-section:last-child { margin-bottom: 0; }
+
+  .ficha-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .ficha-section-title .ico {
+    font-size: 18px;
+  }
+
+  .destaques-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  @media (max-width: 480px) {
+    .destaques-grid { grid-template-columns: 1fr; }
+  }
+
+  .destaque-item {
+    background: #f7efe9;
+    border: 1px solid #e8d8cc;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    line-height: 1.4;
+  }
+
+  .destaque-item .check {
+    color: var(--success);
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .ficha-descricao {
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: var(--text);
+  }
+
+  .ficha-descricao p { margin-bottom: 10px; }
+  .ficha-descricao p:last-child { margin-bottom: 0; }
+
+  .specs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+
+  .specs-table tr {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .specs-table tr:last-child { border-bottom: none; }
+
+  .specs-table td {
+    padding: 10px 8px;
+    vertical-align: top;
+  }
+
+  .specs-table td:first-child {
+    font-weight: 700;
+    color: var(--primary-dark);
+    width: 42%;
+    white-space: nowrap;
+  }
+
+  .specs-table tr:nth-child(even) {
+    background: #fafbfd;
+  }
+
+  .lista-itens {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .lista-itens li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  .lista-itens li .num {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tags-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tag-pill {
+    background: #f5ece5;
+    color: var(--primary-dark);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 1px solid #e6d6c9;
+  }
+
+  .cta-box {
+    margin-top: 4px;
+    background: linear-gradient(135deg, #fff8e6 0%, #fff0d4 100%);
+    border: 1.5px solid var(--accent);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #8a5a00;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .raw-toggle {
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .raw-toggle button {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .raw-box {
+    display: none;
+    background: #f7f9fc;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 10px;
+    white-space: pre-wrap;
+    font-size: 13px;
+    line-height: 1.7;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .raw-box.visible { display: block; }
+
+  .new-btn {
+    display: block;
+    width: 100%;
+    margin: 0 auto;
+    padding: 14px;
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .new-btn:hover { border-color: var(--primary-light); background: #f7efe9; }
+
+  .error-msg {
+    background: #fdecec;
+    border: 1px solid #f5c2c2;
+    border-radius: 10px;
+    padding: 16px;
+    color: #c0392b;
+    font-size: 14px;
+    text-align: center;
+    display: none;
+    margin-bottom: 16px;
+  }
+
+  .error-msg.visible { display: block; }
+
+  /* Upload de imagem do produto */
+  .img-upload-area {
+    border: 2px dashed var(--primary-light);
+    border-radius: 10px;
+    background: #f7efe9;
+    padding: 20px 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .img-upload-area:hover, .img-upload-area.drag-over {
+    background: #f0e3da;
+    border-color: var(--primary);
+  }
+
+  .img-upload-area input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .img-upload-icon {
+    font-size: 28px;
+    margin-bottom: 6px;
+  }
+
+  .img-upload-label {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--primary);
+    display: block;
+  }
+
+  .img-upload-hint {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  .img-preview-wrap {
+    display: none;
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1.5px solid var(--border);
+  }
+
+  .img-preview-wrap.visible { display: block; }
+
+  .img-preview-wrap img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    background: #fafafa;
+    display: block;
+  }
+
+  .img-preview-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #f7efe9;
+    border-top: 1px solid var(--border);
+  }
+
+  .img-preview-name {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 200px;
+  }
+
+  .img-remove-btn {
+    background: none;
+    border: none;
+    color: #c0392b;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+
+  .img-remove-btn:hover { background: #fdecec; }
+
+  .img-analyzing {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--primary);
+    font-weight: 600;
+    padding: 6px 12px;
+    background: #f3e7df;
+    border-top: 1px solid var(--border);
+  }
+
+  .img-analyzing.visible { display: flex; }
+
+  .img-analyzed-tag {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--success);
+    font-weight: 700;
+    padding: 6px 12px;
+    background: #edfbf4;
+    border-top: 1px solid #b6e8d0;
+  }
+
+  .img-analyzed-tag.visible { display: flex; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">⚡ FichaTech</div>
+  <h1>Gerador de Ficha Técnica</h1>
+  <p>Informe o código EAN, foto ou nome do produto e gere sua ficha profissional em segundos</p>
+</header>
+
+<div class="container">
+
+<div class="card" id="form-card">
+  <div class="input-group">
+    <div>
+      <label>Código de Barras (EAN) <span style="color:var(--muted);font-weight:400;text-transform:none">(opcional)</span></label>
+      <input type="text" id="ean-input" placeholder="Ex: 7891234567890" inputmode="numeric" maxlength="14">
+    </div>
+    <div>
+      <label>Foto do Produto <span style="color:var(--muted);font-weight:400;text-transform:none">(opcional — IA identifica automaticamente)</span></label>
+      <div class="img-upload-area" id="img-upload-area">
+        <input type="file" id="img-input" accept="image/*" onchange="onImageSelected(event)">
+        <div class="img-upload-icon">🖼️</div>
+        <span class="img-upload-label">Toque para importar foto do produto</span>
+        <span class="img-upload-hint">JPG, PNG, WEBP — a IA vai identificar o produto</span>
+      </div>
+      <div class="img-preview-wrap" id="img-preview-wrap">
+        <img id="img-preview" src="" alt="Prévia">
+        <div class="img-analyzing" id="img-analyzing">
+          <div class="spinner" style="width:16px;height:16px;border-width:2px;margin:0"></div>
+          Analisando imagem com IA...
+        </div>
+        <div class="img-analyzed-tag" id="img-analyzed-tag">
+          <span>✓</span> Produto identificado pela IA
+        </div>
+        <div class="img-preview-actions" id="img-preview-actions" style="display:none">
+          <span class="img-preview-name" id="img-preview-name"></span>
+          <button class="img-remove-btn" onclick="removerImagem()">✕ Remover</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <label>Nome do Produto <span style="color:var(--muted);font-weight:400;text-transform:none">(opcional)</span></label>
+      <input type="text" id="nome-input" placeholder="Ex: Maçarico a Gás Profissional">
+    </div>
+    <div>
+      <label>Marca <span style="color:var(--muted);font-weight:400;text-transform:none">(opcional)</span></label>
+      <input type="text" id="marca-input" placeholder="Ex: Vonder, Tramontina, Tigre...">
+    </div>
+  </div>
+
+  <label style="margin-bottom:8px">Formato da ficha</label>
+  <div class="format-toggle">
+    <button class="format-btn ml active" onclick="setFormato('ml')">🛒 Mercado Livre</button>
+    <button class="format-btn shopee" onclick="setFormato('shopee')">🛍️ Shopee</button>
+    <button class="format-btn ambos" onclick="setFormato('ambos')">✦ Ambos</button>
+  </div>
+
+  <button class="generate-btn" onclick="gerarFicha()">Gerar Ficha Técnica</button>
+</div>
+
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <p style="color:var(--muted);font-size:14px">Buscando dados do produto...</p>
+  <div class="loading-steps">
+    <div class="step active" id="step1"><div class="step-dot"></div> Consultando base de EAN</div>
+    <div class="step" id="step2"><div class="step-dot"></div> Buscando na web</div>
+    <div class="step" id="step3"><div class="step-dot"></div> Gerando ficha com IA</div>
+  </div>
+</div>
+
+<div class="error-msg" id="error-msg"></div>
+<div class="result-area" id="result-area"></div>
+
+<button class="new-btn" id="new-btn" style="display:none" onclick="resetar()">+ Gerar nova ficha</button>
+
+</div>
+
+<script>
+let formato = 'ml';
+let fichasGeradas = [];
+let imagemBase64 = null;
+let imagemMimeType = null;
+let imagemContextoIA = '';
+
+function setFormato(f) {
+  formato = f;
+  document.querySelectorAll('.format-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.format-btn.' + (f === 'ambos' ? 'ambos' : f)).classList.add('active');
+}
+
+// ── Upload de imagem ──────────────────────────────────────────────────────────
+function onImageSelected(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const dataUrl = e.target.result;
+    const base64 = dataUrl.split(',')[1];
+    const mime = file.type || 'image/jpeg';
+
+    imagemBase64 = base64;
+    imagemMimeType = mime;
+    imagemContextoIA = '';
+
+    // Mostrar prévia
+    document.getElementById('img-preview').src = dataUrl;
+    document.getElementById('img-preview-wrap').classList.add('visible');
+    document.getElementById('img-upload-area').style.display = 'none';
+    document.getElementById('img-preview-name').textContent = file.name;
+    document.getElementById('img-preview-actions').style.display = 'flex';
+    document.getElementById('img-analyzing').classList.add('visible');
+    document.getElementById('img-analyzed-tag').classList.remove('visible');
+
+    // Analisar imagem com IA
+    try {
+      const resultado = await analisarImagemProduto(base64, mime);
+      imagemContextoIA = resultado;
+
+      // Preencher campos se estiverem vazios
+      if (resultado) {
+        const nomeEl = document.getElementById('nome-input');
+        const marcaEl = document.getElementById('marca-input');
+        const linhas = resultado.split('\n');
+        linhas.forEach(linha => {
+          if (!nomeEl.value && /produto[:\s]/i.test(linha)) {
+            nomeEl.value = linha.replace(/produto[:\s]*/i, '').trim();
+          }
+          if (!marcaEl.value && /marca[:\s]/i.test(linha)) {
+            marcaEl.value = linha.replace(/marca[:\s]*/i, '').trim();
+          }
+        });
+      }
+    } catch(e) {
+      imagemContextoIA = '';
+    }
+
+    document.getElementById('img-analyzing').classList.remove('visible');
+    document.getElementById('img-analyzed-tag').classList.add('visible');
+  };
+  reader.readAsDataURL(file);
+}
+
+function removerImagem() {
+  imagemBase64 = null;
+  imagemMimeType = null;
+  imagemContextoIA = '';
+  document.getElementById('img-input').value = '';
+  document.getElementById('img-preview-wrap').classList.remove('visible');
+  document.getElementById('img-upload-area').style.display = '';
+  document.getElementById('img-analyzed-tag').classList.remove('visible');
+  document.getElementById('img-analyzing').classList.remove('visible');
+}
+
+async function analisarImagemProduto(base64, mime) {
+  const response = await fetch('/api/analisar-imagem', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ base64, mime })
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err?.error || 'Erro ao analisar imagem');
+  }
+
+  const data = await response.json();
+  return data.texto || '';
+}
+
+// Steps animation
+function animateSteps() {
+  const steps = ['step1','step2','step3'];
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i > 0) {
+      document.getElementById(steps[i-1]).className = 'step done';
+    }
+    if (i < steps.length) {
+      document.getElementById(steps[i]).className = 'step active';
+      i++;
+    } else {
+      clearInterval(interval);
+    }
+  }, 2500);
+  return interval;
+}
+
+function resetSteps() {
+  ['step1','step2','step3'].forEach((s,i) => {
+    document.getElementById(s).className = 'step' + (i===0?' active':'');
+  });
+}
+
+async function buscarOpenFoodFacts(ean) {
+  try {
+    const r = await fetch(`https://world.openfoodfacts.org/api/v0/product/${ean}.json`);
+    const d = await r.json();
+    if (d.status === 1 && d.product) {
+      const p = d.product;
+      return {
+        nome: p.product_name || p.product_name_pt || '',
+        marca: p.brands || '',
+        categoria: p.categories || '',
+        descricao: p.generic_name || '',
+        peso: p.quantity || ''
+      };
+    }
+  } catch(e) {}
+  return null;
+}
+
+async function buscarOpenProductData(ean) {
+  try {
+    const r = await fetch(`https://api.upcitemdb.com/prod/trial/lookup?upc=${ean}`);
+    const d = await r.json();
+    if (d.items && d.items.length > 0) {
+      const item = d.items[0];
+      return {
+        nome: item.title || '',
+        marca: item.brand || '',
+        descricao: item.description || '',
+        categoria: item.category || '',
+        peso: item.weight || ''
+      };
+    }
+  } catch(e) {}
+  return null;
+}
+
+async function gerarFicha() {
+  fichasGeradas = [];
+  const ean = document.getElementById('ean-input').value.trim();
+  const nome = document.getElementById('nome-input').value.trim();
+  const marca = document.getElementById('marca-input').value.trim();
+
+  if (!ean && !nome && !imagemBase64) {
+    alert('Informe o código de barras, uma foto ou o nome do produto.');
+    return;
+  }
+
+  // UI
+  document.getElementById('form-card').style.display = 'none';
+  document.getElementById('error-msg').classList.remove('visible');
+  document.getElementById('result-area').classList.remove('visible');
+  document.getElementById('result-area').innerHTML = '';
+  document.getElementById('new-btn').style.display = 'none';
+  document.getElementById('loading').classList.add('visible');
+  resetSteps();
+
+  const stepInterval = animateSteps();
+
+  // Buscar dados externos
+  let dadosExternos = null;
+  if (ean) {
+    dadosExternos = await buscarOpenFoodFacts(ean) || await buscarOpenProductData(ean);
+  }
+
+  // Montar contexto
+  let contexto = '';
+  if (dadosExternos) {
+    contexto = `Dados encontrados na base de EAN:
+- Nome: ${dadosExternos.nome || 'não encontrado'}
+- Marca: ${dadosExternos.marca || 'não encontrado'}
+- Categoria: ${dadosExternos.categoria || 'não encontrada'}
+- Descrição: ${dadosExternos.descricao || 'não encontrada'}
+- Peso/Quantidade: ${dadosExternos.peso || 'não encontrado'}`;
+  }
+
+  if (imagemContextoIA) {
+    contexto += (contexto ? '\n\n' : '') + `Dados identificados pela IA na imagem do produto:\n${imagemContextoIA}`;
+  }
+
+  const nomeBase = nome || dadosExternos?.nome || 'produto';
+  const marcaBase = marca || dadosExternos?.marca || '';
+
+  const instrucaoFormato = `
+
+IMPORTANTÍSSIMO — FORMATO DE SAÍDA:
+Responda SOMENTE com um objeto JSON válido (sem markdown, sem \`\`\`json, sem texto antes ou depois), seguindo EXATAMENTE este schema:
+
+{
+  "titulo": "string - título do anúncio, otimizado, com marca e principais atributos",
+  "destaques": ["string", "string", "string", "string"],
+  "descricao": ["paragrafo 1", "paragrafo 2", "paragrafo 3"],
+  "especificacoes": [{"label": "Marca", "valor": "..."}, {"label": "Material", "valor": "..."}, ...],
+  "aplicacoes": ["aplicação/uso 1", "aplicação/uso 2", ...],
+  "diferenciais": ["diferencial 1", "diferencial 2", ...],
+  "tags": ["palavra-chave1", "palavra-chave2", ...],
+  "cta": "string - chamada para ação final, persuasiva, incentivando a compra"
+}
+
+Use de 6 a 10 itens em "especificacoes" com dados técnicos REAIS (dimensões, peso, material, voltagem, capacidade, garantia, etc — o que for aplicável ao produto). "destaques" deve ter 4 itens curtos e impactantes. "descricao" deve ter 2-4 parágrafos vendedores e profissionais. "tags" deve ter 12-20 termos de busca. Se algum dado não for encontrado, omita o campo da especificação em vez de inventar.`;
+
+  const prompts = {
+    ml: `Você é um especialista em e-commerce brasileiro, com foco em Mercado Livre e Material de Construção.
+
+${ean ? `EAN/Código de barras: ${ean}` : ''}
+${nomeBase ? `Produto: ${nomeBase}` : ''}
+${marcaBase ? `Marca: ${marcaBase}` : ''}
+${contexto}
+
+Usando a ferramenta de busca web, pesquise informações reais sobre este produto em sites de fabricantes, distribuidores e outros anúncios consolidados do Mercado Livre. Com base nisso, monte uma ficha técnica completa, profissional, detalhada e persuasiva para um anúncio de Mercado Livre — no estilo dos anúncios mais vendidos da categoria. Use linguagem técnica, direta e que gere confiança no comprador. O título deve ter no máximo 60 caracteres.${instrucaoFormato}`,
+
+    shopee: `Você é um especialista em e-commerce brasileiro, com foco em Shopee e Material de Construção.
+
+${ean ? `EAN/Código de barras: ${ean}` : ''}
+${nomeBase ? `Produto: ${nomeBase}` : ''}
+${marcaBase ? `Marca: ${marcaBase}` : ''}
+${contexto}
+
+Usando a ferramenta de busca web, pesquise informações reais sobre este produto. Com base nisso, monte uma ficha técnica completa, profissional, detalhada e persuasiva para um anúncio de Shopee — no estilo dos anúncios mais vendidos da categoria, com linguagem mais próxima do consumidor mas sem perder o profissionalismo. O título pode ter até 120 caracteres e pode usar 1-2 emojis estratégicos.${instrucaoFormato}`
+  };
+
+  try {
+    let results = [];
+
+    if (formato === 'ambos') {
+      const [resML, resShopee] = await Promise.all([
+        chamarAPI(prompts.ml),
+        chamarAPI(prompts.shopee)
+      ]);
+      results = [
+        { tag: 'ml', label: 'Mercado Livre', tagClass: 'tag-ml', dados: resML },
+        { tag: 'shopee', label: 'Shopee', tagClass: 'tag-shopee', dados: resShopee }
+      ];
+    } else {
+      const dados = await chamarAPI(prompts[formato]);
+      results = [{ tag: formato, label: formato === 'ml' ? 'Mercado Livre' : 'Shopee', tagClass: formato === 'ml' ? 'tag-ml' : 'tag-shopee', dados }];
+    }
+
+    clearInterval(stepInterval);
+    ['step1','step2','step3'].forEach(s => document.getElementById(s).className = 'step done');
+
+    setTimeout(() => {
+      document.getElementById('loading').classList.remove('visible');
+      const area = document.getElementById('result-area');
+
+      results.forEach((r, idx) => {
+        area.innerHTML += renderFicha(r, idx);
+      });
+
+      area.classList.add('visible');
+      document.getElementById('new-btn').style.display = 'block';
+    }, 500);
+
+  } catch(e) {
+    clearInterval(stepInterval);
+    document.getElementById('loading').classList.remove('visible');
+    document.getElementById('error-msg').textContent = 'Erro ao gerar ficha: ' + (e.message || 'Tente novamente.');
+    document.getElementById('error-msg').classList.add('visible');
+    document.getElementById('form-card').style.display = 'block';
+    document.getElementById('new-btn').style.display = 'block';
+  }
+}
+
+async function chamarAPI(prompt) {
+  // Montar conteúdo da mensagem (com ou sem imagem)
+  let conteudo;
+  if (imagemBase64) {
+    conteudo = [
+      {
+        type: 'image',
+        source: { type: 'base64', media_type: imagemMimeType, data: imagemBase64 }
+      },
+      { type: 'text', text: prompt }
+    ];
+  } else {
+    conteudo = prompt;
+  }
+
+  const response = await fetch('/api/gerar-ficha', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      mensagens: [{ role: 'user', content: conteudo }]
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err?.error || 'Erro na API');
+  }
+
+  const data = await response.json();
+
+  const texto = (data.content || [])
+    .filter(b => b.type === 'text')
+    .map(b => b.text)
+    .join('\n')
+    .trim();
+
+  return parseFicha(texto);
+}
+
+function parseFicha(texto) {
+  // Tenta extrair o JSON do texto, removendo possíveis blocos de markdown
+  let limpo = texto.trim();
+  limpo = limpo.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '');
+
+  // Tenta achar o primeiro { e o último }
+  const inicio = limpo.indexOf('{');
+  const fim = limpo.lastIndexOf('}');
+  if (inicio !== -1 && fim !== -1) {
+    limpo = limpo.substring(inicio, fim + 1);
+  }
+
+  try {
+    return JSON.parse(limpo);
+  } catch(e) {
+    // Falhou o parse: retorna como texto puro
+    return { _raw: texto };
+  }
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderFicha(r, idx) {
+  const d = r.dados;
+  const rawId = `raw-${idx}`;
+  const fichaId = `ficha-${idx}`;
+
+  if (d._raw) {
+    return `
+      <div style="margin-bottom:20px">
+        <div class="result-header">
+          <span class="result-tag ${r.tagClass}">${r.label}</span>
+          <button class="copy-btn" onclick="copiarTexto('${rawId}', this)">📋 Copiar</button>
+        </div>
+        <div class="ficha"><div class="ficha-body">
+          <div class="raw-box visible" id="${rawId}">${escapeHtml(d._raw)}</div>
+        </div></div>
+      </div>`;
+  }
+
+  const destaquesHtml = (d.destaques || []).map(it =>
+    `<div class="destaque-item"><span class="check">✓</span><span>${escapeHtml(it)}</span></div>`
+  ).join('');
+
+  const descricaoHtml = (Array.isArray(d.descricao) ? d.descricao : [d.descricao]).filter(Boolean)
+    .map(p => `<p>${escapeHtml(p)}</p>`).join('');
+
+  const specsHtml = (d.especificacoes || []).map(e =>
+    `<tr><td>${escapeHtml(e.label)}</td><td>${escapeHtml(e.valor)}</td></tr>`
+  ).join('');
+
+  const aplicacoesHtml = (d.aplicacoes || []).map((a,i) =>
+    `<li><span class="num">${i+1}</span><span>${escapeHtml(a)}</span></li>`
+  ).join('');
+
+  const diferenciaisHtml = (d.diferenciais || []).map(di =>
+    `<div class="destaque-item"><span class="check">★</span><span>${escapeHtml(di)}</span></div>`
+  ).join('');
+
+  const tagsHtml = (d.tags || []).map(t => `<span class="tag-pill">${escapeHtml(t)}</span>`).join('');
+
+  // Texto plano para cópia (compatível com colar direto no anúncio)
+  // Armazena os dados em memória (sem injetar elementos extras no DOM,
+  // que causavam acúmulo e bugs após gerar mais de uma ficha)
+  fichasGeradas[idx] = d;
+
+  return `
+    <div style="margin-bottom:24px">
+      <div class="result-header">
+        <span class="result-tag ${r.tagClass}">${r.label}</span>
+        <button class="copy-btn" onclick="copiarPlano(${idx}, this)">📋 Copiar texto</button>
+      </div>
+
+      <div class="ficha" id="${fichaId}">
+        <div class="ficha-banner">
+          <div class="ficha-titulo">${escapeHtml(d.titulo || '')}</div>
+        </div>
+        <div class="ficha-body">
+
+          ${destaquesHtml ? `
+          <div class="ficha-section">
+            <div class="ficha-section-title"><span class="ico">✨</span> Destaques</div>
+            <div class="destaques-grid">${destaquesHtml}</div>
+          </div>` : ''}
+
+          ${descricaoHtml ? `
+          <div class="ficha-section">
+            <div class="ficha-section-title"><span class="ico">📝</span> Descrição</div>
+            <div class="ficha-descricao">${descricaoHtml}</div>
+          </div>` : ''}
+
+          ${specsHtml ? `
+          <div class="ficha-section">
+            <div class="ficha-section-title"><span class="ico">🔧</span> Especificações Técnicas</div>
+            <table class="specs-table"><tbody>${specsHtml}</tbody></table>
+          </div>` : ''}
+
+          ${aplicacoesHtml ? `
+          <div class="ficha-section">
+            <div class="ficha-section-title"><span class="ico">🛠️</span> Aplicações e Uso</div>
+            <ul class="lista-itens">${aplicacoesHtml}</ul>
+          </div>` : ''}
+
+          ${diferenciaisHtml ? `
+          <div class="ficha-section">
+            <div class="ficha-section-title"><span class="ico">⭐</span> Diferenciais</div>
+            <div class="destaques-grid">${diferenciaisHtml}</div>
+          </div>` : ''}
+
+          ${tagsHtml ? `
+          <div class="ficha-section">
+            <div class="ficha-section-title"><span class="ico">🔑</span> Palavras-chave</div>
+            <div class="tags-wrap">${tagsHtml}</div>
+          </div>` : ''}
+
+          ${d.cta ? `
+          <div class="ficha-section">
+            <div class="cta-box">${escapeHtml(d.cta)}</div>
+          </div>` : ''}
+
+        </div>
+      </div>
+
+      <div class="raw-toggle">
+        <button onclick="toggleRaw(${idx})">Ver dados brutos (JSON)</button>
+      </div>
+      <div class="raw-box" id="${rawId}">${escapeHtml(JSON.stringify(d, null, 2))}</div>
+    </div>`;
+}
+
+function montarTextoPlano(d) {
+  let partes = [];
+  if (d.titulo) partes.push(d.titulo.toUpperCase());
+  if (d.destaques && d.destaques.length) {
+    partes.push('\nDESTAQUES:');
+    d.destaques.forEach(x => partes.push('✓ ' + x));
+  }
+  if (d.descricao) {
+    partes.push('\nDESCRIÇÃO:');
+    (Array.isArray(d.descricao) ? d.descricao : [d.descricao]).forEach(p => partes.push(p));
+  }
+  if (d.especificacoes && d.especificacoes.length) {
+    partes.push('\nESPECIFICAÇÕES TÉCNICAS:');
+    d.especificacoes.forEach(e => partes.push(`• ${e.label}: ${e.valor}`));
+  }
+  if (d.aplicacoes && d.aplicacoes.length) {
+    partes.push('\nAPLICAÇÕES E USO:');
+    d.aplicacoes.forEach((a,i) => partes.push(`${i+1}. ${a}`));
+  }
+  if (d.diferenciais && d.diferenciais.length) {
+    partes.push('\nDIFERENCIAIS:');
+    d.diferenciais.forEach(di => partes.push('★ ' + di));
+  }
+  if (d.tags && d.tags.length) {
+    partes.push('\nPALAVRAS-CHAVE:');
+    partes.push(d.tags.join(', '));
+  }
+  if (d.cta) {
+    partes.push('\n' + d.cta);
+  }
+  return partes.join('\n');
+}
+
+function toggleRaw(idx) {
+  document.getElementById(`raw-${idx}`).classList.toggle('visible');
+}
+
+function copiarPlano(idx, btn) {
+  const d = fichasGeradas[idx];
+  const texto = montarTextoPlano(d);
+  navigator.clipboard.writeText(texto).then(() => {
+    btn.textContent = '✓ Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.innerHTML = '📋 Copiar texto';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function copiarTexto(id, btn) {
+  const texto = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(texto).then(() => {
+    btn.textContent = '✓ Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.innerHTML = '📋 Copiar';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function resetar() {
+  fichasGeradas = [];
+  imagemBase64 = null;
+  imagemMimeType = null;
+  imagemContextoIA = '';
+  document.getElementById('result-area').classList.remove('visible');
+  document.getElementById('result-area').innerHTML = '';
+  document.getElementById('error-msg').classList.remove('visible');
+  document.getElementById('new-btn').style.display = 'none';
+  document.getElementById('form-card').style.display = 'block';
+  document.getElementById('ean-input').value = '';
+  document.getElementById('nome-input').value = '';
+  document.getElementById('marca-input').value = '';
+  removerImagem();
+}
+</script>
+</body>
+</html>
