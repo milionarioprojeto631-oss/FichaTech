@@ -1,7 +1,6 @@
 export const config = { maxDuration: 60 };
 
 export default async function handler(req, res) {
-  // Só aceita POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' });
   }
@@ -13,20 +12,36 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'anthropic-version': '2023-06-01',
-        'x-api-key': process.env.ANTHROPIC_API_KEY
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 4000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: mensagens
-      })
-    });
+    // Converter formato Anthropic para Gemini
+    const partes = [];
+    const msg = mensagens[0];
+    const conteudo = Array.isArray(msg.content) ? msg.content : [{ type: 'text', text: msg.content }];
+
+    for (const bloco of conteudo) {
+      if (bloco.type === 'text') {
+        partes.push({ text: bloco.text });
+      } else if (bloco.type === 'image') {
+        partes.push({
+          inline_data: {
+            mime_type: bloco.source.media_type,
+            data: bloco.source.data
+          }
+        });
+      }
+    }
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: partes }],
+          tools: [{ google_search: {} }],
+          generationConfig: { maxOutputTokens: 4000 }
+        })
+      }
+    );
 
     const data = await response.json();
 
@@ -34,7 +49,17 @@ export default async function handler(req, res) {
       return res.status(response.status).json({ error: data?.error?.message || 'Erro na API' });
     }
 
-    return res.status(200).json(data);
+    // Extrair texto da resposta do Gemini
+    const texto = data.candidates?.[0]?.content?.parts
+      ?.filter(p => p.text)
+      ?.map(p => p.text)
+      ?.join('\n')
+      ?.trim() || '';
+
+    // Retornar no formato que o front-end já espera
+    return res.status(200).json({
+      content: [{ type: 'text', text: texto }]
+    });
 
   } catch (e) {
     return res.status(500).json({ error: e.message || 'Erro interno' });
