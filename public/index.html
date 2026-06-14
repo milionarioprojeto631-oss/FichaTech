@@ -662,16 +662,315 @@
   }
 
   .img-analyzed-tag.visible { display: flex; }
+
+  /* ── Login ── */
+  #login-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 32px 20px;
+    background: var(--bg);
+  }
+
+  .login-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 24px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 4px 24px rgba(15,30,50,0.08);
+  }
+
+  .login-logo {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .login-logo .logo { font-size: 13px; letter-spacing: 3px; }
+  .login-logo h2 { font-size: 22px; font-weight: 800; margin-top: 6px; color: var(--text); }
+  .login-logo p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  .login-tabs {
+    display: flex;
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 3px;
+    margin-bottom: 20px;
+  }
+
+  .login-tab {
+    flex: 1;
+    padding: 8px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    border: none;
+    background: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+
+  .login-tab.active {
+    background: var(--surface);
+    color: var(--primary);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  .login-btn {
+    width: 100%;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: background 0.15s;
+  }
+
+  .login-btn:hover { background: var(--primary-dark); }
+  .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .login-error {
+    background: #fdf0ef;
+    border: 1px solid #f5c6c2;
+    color: #c0392b;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-bottom: 14px;
+    display: none;
+  }
+
+  .login-error.visible { display: block; }
+
+  /* ── Header com usuário logado ── */
+  .header-user {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: rgba(0,0,0,0.15);
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+  }
+
+  .logout-btn {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ── Histórico ── */
+  .historico-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .historico-header h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .historico-count {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .ficha-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+
+  .ficha-item:hover { border-color: var(--primary-light); }
+
+  .ficha-item-info { flex: 1; min-width: 0; }
+
+  .ficha-item-nome {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ficha-item-meta {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  .ficha-item-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .ficha-ver-btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .ficha-del-btn {
+    background: #fdf0ef;
+    color: #c0392b;
+    border: 1px solid #f5c6c2;
+    border-radius: 7px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .historico-vazio {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .salvar-btn {
+    width: 100%;
+    background: var(--success);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 13px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .salvar-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .salvar-btn.salvo { background: #15805a; }
+
+  .nav-tabs {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .nav-tab {
+    flex: 1;
+    padding: 14px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+  }
+
+  .nav-tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+
+  #app { display: none; }
+  #login-screen { display: flex; }
 </style>
 </head>
 <body>
 
+<!-- ── Tela de Login ── -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo">⚡ FichaTech</div>
+      <h2>Bem-vindo</h2>
+      <p>Faça login para acessar o sistema</p>
+    </div>
+    <div class="login-tabs">
+      <button class="login-tab active" onclick="setLoginTab('login')">Entrar</button>
+      <button class="login-tab" onclick="setLoginTab('signup')">Criar conta</button>
+    </div>
+    <div class="login-error" id="login-error"></div>
+    <div class="input-group">
+      <div>
+        <label>E-mail</label>
+        <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email">
+      </div>
+      <div>
+        <label>Senha</label>
+        <input type="password" id="login-senha" placeholder="Mínimo 6 caracteres" autocomplete="current-password">
+      </div>
+    </div>
+    <button class="login-btn" id="login-btn" onclick="fazerLogin()">Entrar</button>
+  </div>
+</div>
+
+<!-- ── App Principal ── -->
+<div id="app">
+
 <header>
-  <div class="logo">⚡ FichaTech</div>
-  <h1>Gerador de Ficha Técnica</h1>
-  <p>Informe o código EAN, foto ou nome do produto e gere sua ficha profissional em segundos</p>
+  <div class="header-user">
+    <span id="header-email">—</span>
+    <button class="logout-btn" onclick="fazerLogout()">Sair</button>
+  </div>
+  <div style="padding: 20px 20px 24px; text-align: center;">
+    <div class="logo">⚡ FichaTech</div>
+    <h1>Gerador de Ficha Técnica</h1>
+    <p>Informe o código EAN, foto ou nome do produto e gere sua ficha profissional em segundos</p>
+  </div>
 </header>
 
+<div class="nav-tabs">
+  <button class="nav-tab active" onclick="setAba('gerar')" id="tab-gerar">🔧 Gerar Ficha</button>
+  <button class="nav-tab" onclick="setAba('historico')" id="tab-historico">📂 Histórico</button>
+</div>
+
+<!-- ABA GERAR -->
+<div id="aba-gerar">
 <div class="container">
 
 <div class="card" id="form-card">
@@ -736,9 +1035,26 @@
 <div class="error-msg" id="error-msg"></div>
 <div class="result-area" id="result-area"></div>
 
+<button class="salvar-btn" id="salvar-ficha-btn" style="display:none" onclick="salvarFicha()">💾 Salvar no histórico</button>
 <button class="new-btn" id="new-btn" style="display:none" onclick="resetar()">+ Gerar nova ficha</button>
 
+</div><!-- fim container -->
+</div><!-- fim aba-gerar -->
+
+<!-- ABA HISTÓRICO -->
+<div id="aba-historico" style="display:none">
+<div class="container">
+  <div class="historico-header">
+    <h3>Fichas Salvas</h3>
+    <span class="historico-count" id="historico-count"></span>
+  </div>
+  <div id="historico-lista">
+    <div class="historico-vazio">Carregando...</div>
+  </div>
 </div>
+</div>
+
+</div><!-- fim app -->
 
 <script>
 let formato = 'ml';
@@ -1007,6 +1323,7 @@ Usando a ferramenta de busca web, pesquise informações reais sobre este produt
 
       area.classList.add('visible');
       document.getElementById('new-btn').style.display = 'block';
+      document.getElementById('salvar-ficha-btn').style.display = 'flex';
     }, 500);
 
   } catch(e) {
@@ -1262,11 +1579,232 @@ function resetar() {
   document.getElementById('result-area').innerHTML = '';
   document.getElementById('error-msg').classList.remove('visible');
   document.getElementById('new-btn').style.display = 'none';
+  document.getElementById('salvar-ficha-btn').style.display = 'none';
   document.getElementById('form-card').style.display = 'block';
   document.getElementById('ean-input').value = '';
   document.getElementById('nome-input').value = '';
   document.getElementById('marca-input').value = '';
   removerImagem();
+}
+
+// ── Auth ─────────────────────────────────────────────────────────────────────
+let authToken = localStorage.getItem('ft_token') || null;
+let authEmail = localStorage.getItem('ft_email') || null;
+let loginTab = 'login';
+
+function setLoginTab(tab) {
+  loginTab = tab;
+  document.querySelectorAll('.login-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.login-tab')[tab === 'login' ? 0 : 1].classList.add('active');
+  const btn = document.getElementById('login-btn');
+  btn.textContent = tab === 'login' ? 'Entrar' : 'Criar conta';
+  btn.onclick = tab === 'login' ? fazerLogin : criarConta;
+}
+
+function mostrarErroLogin(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = msg;
+  el.classList.add('visible');
+}
+
+function esconderErroLogin() {
+  document.getElementById('login-error').classList.remove('visible');
+}
+
+async function fazerLogin() {
+  esconderErroLogin();
+  const email = document.getElementById('login-email').value.trim();
+  const senha = document.getElementById('login-senha').value;
+  if (!email || !senha) return mostrarErroLogin('Preencha e-mail e senha.');
+
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true;
+  btn.textContent = 'Entrando...';
+
+  try {
+    const r = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'login', email, password: senha })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Erro ao entrar');
+    authToken = data.token;
+    authEmail = data.user.email;
+    localStorage.setItem('ft_token', authToken);
+    localStorage.setItem('ft_email', authEmail);
+    entrarNoApp();
+  } catch(e) {
+    mostrarErroLogin(e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
+  }
+}
+
+async function criarConta() {
+  esconderErroLogin();
+  const email = document.getElementById('login-email').value.trim();
+  const senha = document.getElementById('login-senha').value;
+  if (!email || !senha) return mostrarErroLogin('Preencha e-mail e senha.');
+  if (senha.length < 6) return mostrarErroLogin('A senha deve ter pelo menos 6 caracteres.');
+
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true;
+  btn.textContent = 'Criando...';
+
+  try {
+    const r = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'signup', email, password: senha })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Erro ao criar conta');
+    mostrarErroLogin('✅ Conta criada! Verifique seu e-mail e depois faça login.');
+  } catch(e) {
+    mostrarErroLogin(e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Criar conta';
+  }
+}
+
+function entrarNoApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('header-email').textContent = authEmail;
+}
+
+function fazerLogout() {
+  authToken = null;
+  authEmail = null;
+  localStorage.removeItem('ft_token');
+  localStorage.removeItem('ft_email');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+// ── Abas ─────────────────────────────────────────────────────────────────────
+function setAba(aba) {
+  document.getElementById('aba-gerar').style.display = aba === 'gerar' ? 'block' : 'none';
+  document.getElementById('aba-historico').style.display = aba === 'historico' ? 'block' : 'none';
+  document.getElementById('tab-gerar').classList.toggle('active', aba === 'gerar');
+  document.getElementById('tab-historico').classList.toggle('active', aba === 'historico');
+  if (aba === 'historico') carregarHistorico();
+}
+
+// ── Histórico ────────────────────────────────────────────────────────────────
+async function carregarHistorico() {
+  const lista = document.getElementById('historico-lista');
+  lista.innerHTML = '<div class="historico-vazio">Carregando...</div>';
+
+  try {
+    const r = await fetch('/api/fichas', {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+    if (r.status === 401) { fazerLogout(); return; }
+    const fichas = await r.json();
+
+    document.getElementById('historico-count').textContent = `${fichas.length} ficha${fichas.length !== 1 ? 's' : ''}`;
+
+    if (!fichas.length) {
+      lista.innerHTML = '<div class="historico-vazio">📂 Nenhuma ficha salva ainda.<br>Gere e salve sua primeira ficha!</div>';
+      return;
+    }
+
+    lista.innerHTML = fichas.map(f => `
+      <div class="ficha-item">
+        <div class="ficha-item-info">
+          <div class="ficha-item-nome">${f.nome_produto}</div>
+          <div class="ficha-item-meta">${f.marca ? f.marca + ' · ' : ''}${f.formato?.toUpperCase() || ''} · ${new Date(f.created_at).toLocaleDateString('pt-BR')}</div>
+        </div>
+        <div class="ficha-item-actions">
+          <button class="ficha-ver-btn" onclick="verFicha(${f.id})">Ver</button>
+          <button class="ficha-del-btn" onclick="apagarFicha(${f.id}, this)">✕</button>
+        </div>
+      </div>
+    `).join('');
+
+    window._fichasCache = fichas;
+
+  } catch(e) {
+    lista.innerHTML = '<div class="historico-vazio">Erro ao carregar fichas.</div>';
+  }
+}
+
+function verFicha(id) {
+  const f = (window._fichasCache || []).find(x => x.id === id);
+  if (!f) return;
+  fichasGeradas = [];
+  if (f.conteudo_ml) fichasGeradas.push({ ...JSON.parse(f.conteudo_ml), _tipo: 'ml' });
+  if (f.conteudo_shopee) fichasGeradas.push({ ...JSON.parse(f.conteudo_shopee), _tipo: 'shopee' });
+  setAba('gerar');
+  document.getElementById('form-card').style.display = 'none';
+  document.getElementById('new-btn').style.display = 'block';
+  renderizarFichas();
+  document.getElementById('result-area').classList.add('visible');
+}
+
+async function apagarFicha(id, btn) {
+  if (!confirm('Apagar esta ficha?')) return;
+  btn.disabled = true;
+  try {
+    const r = await fetch('/api/fichas', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+      body: JSON.stringify({ id })
+    });
+    if (r.ok) carregarHistorico();
+  } catch(e) {}
+}
+
+async function salvarFicha() {
+  if (!fichasGeradas.length) return;
+  const btn = document.getElementById('salvar-ficha-btn');
+  btn.disabled = true;
+  btn.textContent = '💾 Salvando...';
+
+  const ean = document.getElementById('ean-input').value.trim();
+  const nome = fichasGeradas[0]?.titulo || document.getElementById('nome-input').value.trim() || 'Produto';
+  const marca = fichasGeradas[0]?.marca || document.getElementById('marca-input').value.trim() || '';
+  const ml = fichasGeradas.find(f => f._tipo === 'ml');
+  const shopee = fichasGeradas.find(f => f._tipo === 'shopee');
+
+  try {
+    const r = await fetch('/api/fichas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+      body: JSON.stringify({
+        nome_produto: nome,
+        marca,
+        ean,
+        formato,
+        conteudo_ml: ml ? JSON.stringify(ml) : null,
+        conteudo_shopee: shopee ? JSON.stringify(shopee) : null
+      })
+    });
+    if (r.ok) {
+      btn.textContent = '✓ Salvo!';
+      btn.classList.add('salvo');
+      setTimeout(() => {
+        btn.textContent = '💾 Salvar no histórico';
+        btn.classList.remove('salvo');
+        btn.disabled = false;
+      }, 2500);
+    } else {
+      throw new Error('Erro ao salvar');
+    }
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '💾 Salvar no histórico';
+    alert('Erro ao salvar ficha. Tente novamente.');
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+if (authToken && authEmail) {
+  entrarNoApp();
 }
 </script>
 </body>
