@@ -1,0 +1,6 @@
+{
+  "name": "fichatech",
+  "version": "1.0.0",
+  "description": "Gerador de Ficha Técnica com IA",
+  "private": true
+}
