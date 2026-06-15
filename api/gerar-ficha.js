@@ -12,18 +12,29 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    // Converter formato para OpenAI
+    const msg = mensagens[0];
+    const conteudo = Array.isArray(msg.content) ? msg.content : [{ type: 'text', text: msg.content }];
+
+    const partes = conteudo.map(bloco => {
+      if (bloco.type === 'text') return { type: 'text', text: bloco.text };
+      if (bloco.type === 'image') return {
+        type: 'image_url',
+        image_url: { url: `data:${bloco.source.media_type};base64,${bloco.source.data}` }
+      };
+      return null;
+    }).filter(Boolean);
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'anthropic-version': '2023-06-01',
-        'x-api-key': process.env.ANTHROPIC_API_KEY
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: 'gpt-4o',
         max_tokens: 4000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: mensagens
+        messages: [{ role: 'user', content: partes }]
       })
     });
 
@@ -33,7 +44,12 @@ export default async function handler(req, res) {
       return res.status(response.status).json({ error: data?.error?.message || 'Erro na API' });
     }
 
-    return res.status(200).json(data);
+    const texto = data.choices?.[0]?.message?.content?.trim() || '';
+
+    // Retornar no formato que o front-end espera
+    return res.status(200).json({
+      content: [{ type: 'text', text: texto }]
+    });
 
   } catch (e) {
     return res.status(500).json({ error: e.message || 'Erro interno' });
