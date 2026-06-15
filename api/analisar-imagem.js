@@ -12,22 +12,21 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'anthropic-version': '2023-06-01',
-        'x-api-key': process.env.ANTHROPIC_API_KEY
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: 'gpt-4o',
         max_tokens: 500,
         messages: [{
           role: 'user',
           content: [
             {
-              type: 'image',
-              source: { type: 'base64', media_type: mime, data: base64 }
+              type: 'image_url',
+              image_url: { url: `data:${mime};base64,${base64}` }
             },
             {
               type: 'text',
@@ -52,11 +51,7 @@ Se alguma informação não for visível, omita a linha. Seja preciso e objetivo
       return res.status(response.status).json({ error: data?.error?.message || 'Erro na API' });
     }
 
-    const texto = (data.content || [])
-      .filter(b => b.type === 'text')
-      .map(b => b.text)
-      .join('\n')
-      .trim();
+    const texto = data.choices?.[0]?.message?.content?.trim() || '';
 
     return res.status(200).json({ texto });
 
