@@ -12,41 +12,78 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Converter formato para OpenAI
     const msg = mensagens[0];
     const conteudo = Array.isArray(msg.content) ? msg.content : [{ type: 'text', text: msg.content }];
 
-    const partes = conteudo.map(bloco => {
-      if (bloco.type === 'text') return { type: 'text', text: bloco.text };
-      if (bloco.type === 'image') return {
-        type: 'image_url',
-        image_url: { url: `data:${bloco.source.media_type};base64,${bloco.source.data}` }
-      };
-      return null;
-    }).filter(Boolean);
+    // Extrair só o texto para o modelo de busca (não suporta imagem)
+    const textoPrompt = conteudo
+      .filter(b => b.type === 'text')
+      .map(b => b.text)
+      .join('\n');
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o',
-        max_tokens: 4000,
-        messages: [{ role: 'user', content: partes }]
-      })
-    });
+    const temImagem = conteudo.some(b => b.type === 'image');
 
-    const data = await response.json();
+    let texto = '';
 
-    if (!response.ok) {
-      return res.status(response.status).json({ error: data?.error?.message || 'Erro na API' });
+    if (temImagem) {
+      // Com imagem: usa gpt-4o sem busca
+      const partes = conteudo.map(bloco => {
+        if (bloco.type === 'text') return { type: 'text', text: bloco.text };
+        if (bloco.type === 'image') return {
+          type: 'image_url',
+          image_url: { url: `data:${bloco.source.media_type};base64,${bloco.source.data}` }
+        };
+        return null;
+      }).filter(Boolean);
+
+      const r = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o',
+          max_tokens: 4000,
+          messages: [
+            {
+              role: 'system',
+              content: 'Você é um especialista em e-commerce brasileiro. Sempre responda com o JSON solicitado, nunca recuse gerar a ficha técnica.'
+            },
+            { role: 'user', content: partes }
+          ]
+        })
+      });
+      const d = await r.json();
+      if (!r.ok) return res.status(r.status).json({ error: d?.error?.message || 'Erro na API' });
+      texto = d.choices?.[0]?.message?.content?.trim() || '';
+
+    } else {
+      // Sem imagem: usa gpt-4o-search-preview com busca web
+      const r = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-search-preview',
+          max_tokens: 4000,
+          web_search_options: {},
+          messages: [
+            {
+              role: 'system',
+              content: 'Você é um especialista em e-commerce brasileiro. Pesquise o produto na web e sempre responda com o JSON solicitado.'
+            },
+            { role: 'user', content: textoPrompt }
+          ]
+        })
+      });
+      const d = await r.json();
+      if (!r.ok) return res.status(r.status).json({ error: d?.error?.message || 'Erro na API' });
+      texto = d.choices?.[0]?.message?.content?.trim() || '';
     }
 
-    const texto = data.choices?.[0]?.message?.content?.trim() || '';
-
-    // Retornar no formato que o front-end espera
     return res.status(200).json({
       content: [{ type: 'text', text: texto }]
     });
