@@ -1274,23 +1274,23 @@ Responda SOMENTE com um objeto JSON válido (sem markdown, sem \`\`\`json, sem t
 Use de 6 a 10 itens em "especificacoes" com dados técnicos REAIS (dimensões, peso, material, voltagem, capacidade, garantia, etc — o que for aplicável ao produto). "destaques" deve ter 4 itens curtos e impactantes. "descricao" deve ter 2-4 parágrafos vendedores e profissionais. "tags" deve ter 12-20 termos de busca. Se algum dado não for encontrado, omita o campo da especificação em vez de inventar.`;
 
   const prompts = {
-    ml: `Você é um especialista em e-commerce brasileiro, com foco em Mercado Livre e Material de Construção.
+    ml: `Gere uma ficha técnica completa, profissional e persuasiva para um anúncio de Mercado Livre.
 
 ${ean ? `EAN/Código de barras: ${ean}` : ''}
 ${nomeBase ? `Produto: ${nomeBase}` : ''}
 ${marcaBase ? `Marca: ${marcaBase}` : ''}
 ${contexto}
 
-Usando a ferramenta de busca web, pesquise informações reais sobre este produto em sites de fabricantes, distribuidores e outros anúncios consolidados do Mercado Livre. Com base nisso, monte uma ficha técnica completa, profissional, detalhada e persuasiva para um anúncio de Mercado Livre — no estilo dos anúncios mais vendidos da categoria. Use linguagem técnica, direta e que gere confiança no comprador. O título deve ter no máximo 60 caracteres.${instrucaoFormato}`,
+Use seu conhecimento sobre o produto para preencher todas as informações técnicas. Monte uma ficha no estilo dos anúncios mais vendidos do Mercado Livre — linguagem técnica, direta e que gere confiança no comprador. O título deve ter no máximo 60 caracteres.${instrucaoFormato}`,
 
-    shopee: `Você é um especialista em e-commerce brasileiro, com foco em Shopee e Material de Construção.
+    shopee: `Gere uma ficha técnica completa, profissional e persuasiva para um anúncio de Shopee.
 
 ${ean ? `EAN/Código de barras: ${ean}` : ''}
 ${nomeBase ? `Produto: ${nomeBase}` : ''}
 ${marcaBase ? `Marca: ${marcaBase}` : ''}
 ${contexto}
 
-Usando a ferramenta de busca web, pesquise informações reais sobre este produto. Com base nisso, monte uma ficha técnica completa, profissional, detalhada e persuasiva para um anúncio de Shopee — no estilo dos anúncios mais vendidos da categoria, com linguagem mais próxima do consumidor mas sem perder o profissionalismo. O título pode ter até 120 caracteres e pode usar 1-2 emojis estratégicos.${instrucaoFormato}`
+Use seu conhecimento sobre o produto para preencher todas as informações técnicas. Monte uma ficha no estilo dos anúncios mais vendidos da Shopee — linguagem próxima do consumidor mas profissional. O título pode ter até 120 caracteres e pode usar 1-2 emojis estratégicos.${instrucaoFormato}`
   };
 
   try {
