@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teste FichaTech</title>
+</head>
+<body style="font-family:sans-serif;padding:20px;background:#fff;color:#000;">
+
+<h1>🔧 Teste de Diagnóstico</h1>
+<p id="resultado" style="font-size:18px;font-weight:bold;color:green;">Carregando...</p>
+
+<div id="caixa-teste" style="border:2px solid #333;padding:20px;margin-top:20px;border-radius:8px;">
+  <p>Se você está vendo esta caixa, o HTML está funcionando.</p>
+  <button onclick="testarJS()" style="padding:10px 20px;font-size:16px;margin-top:10px;">Clique aqui para testar JavaScript</button>
+</div>
+
+<script>
+  document.getElementById('resultado').textContent = '✅ JavaScript carregou com sucesso!';
+
+  function testarJS() {
+    alert('JavaScript está funcionando perfeitamente! 🎉');
+  }
+</script>
+
+</body>
+</html>
