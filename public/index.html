@@ -866,6 +866,43 @@
     font-size: 14px;
   }
 
+  .cat-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .cat-chip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+  }
+
+  .cat-chip.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+  }
+
+  .cat-tag {
+    display: inline-block;
+    background: #f3e7df;
+    color: var(--primary-dark);
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 10px;
+    margin-right: 2px;
+  }
+
   .salvar-btn {
     width: 100%;
     background: var(--success);
@@ -1048,6 +1085,7 @@
     <h3>Fichas Salvas</h3>
     <span class="historico-count" id="historico-count"></span>
   </div>
+  <div class="cat-filtros" id="categoria-filtros"></div>
   <div id="historico-lista">
     <div class="historico-vazio">Carregando...</div>
   </div>
@@ -1262,16 +1300,18 @@ Responda SOMENTE com um objeto JSON válido (sem markdown, sem \`\`\`json, sem t
 
 {
   "titulo": "string - título do anúncio, otimizado, com marca e principais atributos",
+  "categoria": "string - categoria geral do produto em português (ex: Ferramentas, Material Elétrico, Fechaduras e Segurança, Hidráulica, Pintura, Jardim, Construção Civil, etc)",
   "destaques": ["string", "string", "string", "string"],
   "descricao": ["paragrafo 1", "paragrafo 2", "paragrafo 3"],
   "especificacoes": [{"label": "Marca", "valor": "..."}, {"label": "Material", "valor": "..."}, ...],
   "aplicacoes": ["aplicação/uso 1", "aplicação/uso 2", ...],
   "diferenciais": ["diferencial 1", "diferencial 2", ...],
   "tags": ["palavra-chave1", "palavra-chave2", ...],
+  "imagens_sugeridas": ["sugestão de foto 1 (ex: Foto frontal do produto em fundo branco)", "sugestão de foto 2 (ex: Foto mostrando o produto em uso/aplicação)", "sugestão de foto 3", "sugestão de foto 4", "sugestão de foto 5"],
   "cta": "string - chamada para ação final, persuasiva, incentivando a compra"
 }
 
-Use de 6 a 10 itens em "especificacoes" com dados técnicos REAIS (dimensões, peso, material, voltagem, capacidade, garantia, etc — o que for aplicável ao produto). "destaques" deve ter 4 itens curtos e impactantes. "descricao" deve ter 2-4 parágrafos vendedores e profissionais. "tags" deve ter 12-20 termos de busca. Se algum dado não for encontrado, omita o campo da especificação em vez de inventar.`;
+Use de 6 a 10 itens em "especificacoes" com dados técnicos REAIS (dimensões, peso, material, voltagem, capacidade, garantia, etc — o que for aplicável ao produto). "destaques" deve ter 4 itens curtos e impactantes. "descricao" deve ter 2-4 parágrafos vendedores e profissionais. "tags" deve ter 12-20 termos de busca. "imagens_sugeridas" deve ter 5 sugestões práticas e específicas de fotos que o vendedor deveria tirar/usar no anúncio para este produto especificamente (ângulos, contexto de uso, detalhes, embalagem, comparação de tamanho, etc). "categoria" deve ser uma categoria curta e padronizada. Se algum dado não for encontrado, omita o campo da especificação em vez de inventar.`;
 
   const prompts = {
     ml: `Gere uma ficha técnica completa, profissional e persuasiva para um anúncio de Mercado Livre.
@@ -1439,6 +1479,10 @@ function renderFicha(r, idx) {
 
   const tagsHtml = (d.tags || []).map(t => `<span class="tag-pill">${escapeHtml(t)}</span>`).join('');
 
+  const imagensHtml = (d.imagens_sugeridas || []).map((im,i) =>
+    `<li><span class="num">📷 ${i+1}</span><span>${escapeHtml(im)}</span></li>`
+  ).join('');
+
   // Texto plano para cópia (compatível com colar direto no anúncio)
   // Armazena os dados em memória (sem injetar elementos extras no DOM,
   // que causavam acúmulo e bugs após gerar mais de uma ficha)
@@ -1491,6 +1535,12 @@ function renderFicha(r, idx) {
           <div class="ficha-section">
             <div class="ficha-section-title"><span class="ico">🔑</span> Palavras-chave</div>
             <div class="tags-wrap">${tagsHtml}</div>
+          </div>` : ''}
+
+          ${imagensHtml ? `
+          <div class="ficha-section">
+            <div class="ficha-section-title"><span class="ico">📸</span> Sugestões de Fotos para o Anúncio</div>
+            <ul class="lista-itens">${imagensHtml}</ul>
           </div>` : ''}
 
           ${d.cta ? `
@@ -1695,6 +1745,8 @@ function setAba(aba) {
 }
 
 // ── Histórico ────────────────────────────────────────────────────────────────
+let categoriaFiltro = null;
+
 async function carregarHistorico() {
   const lista = document.getElementById('historico-lista');
   lista.innerHTML = '<div class="historico-vazio">Carregando...</div>';
@@ -1704,33 +1756,84 @@ async function carregarHistorico() {
       headers: { 'Authorization': `Bearer ${authToken}` }
     });
     if (r.status === 401) { fazerLogout(); return; }
-    const fichas = await r.json();
+    const data = await r.json();
 
-    document.getElementById('historico-count').textContent = `${fichas.length} ficha${fichas.length !== 1 ? 's' : ''}`;
+    if (!r.ok) throw new Error(data.error || 'Erro ao buscar fichas');
 
-    if (!fichas.length) {
-      lista.innerHTML = '<div class="historico-vazio">📂 Nenhuma ficha salva ainda.<br>Gere e salve sua primeira ficha!</div>';
-      return;
-    }
-
-    lista.innerHTML = fichas.map(f => `
-      <div class="ficha-item">
-        <div class="ficha-item-info">
-          <div class="ficha-item-nome">${f.nome_produto}</div>
-          <div class="ficha-item-meta">${f.marca ? f.marca + ' · ' : ''}${f.formato?.toUpperCase() || ''} · ${new Date(f.created_at).toLocaleDateString('pt-BR')}</div>
-        </div>
-        <div class="ficha-item-actions">
-          <button class="ficha-ver-btn" onclick="verFicha(${f.id})">Ver</button>
-          <button class="ficha-del-btn" onclick="apagarFicha(${f.id}, this)">✕</button>
-        </div>
-      </div>
-    `).join('');
-
+    const fichas = data;
     window._fichasCache = fichas;
 
+    // Montar lista de categorias únicas, ordenadas
+    const categorias = [...new Set(fichas.map(f => f.categoria || 'Sem categoria'))].sort();
+
+    renderizarFiltroCategorias(categorias, fichas.length);
+    renderizarListaFichas(fichas);
+
   } catch(e) {
-    lista.innerHTML = '<div class="historico-vazio">Erro ao carregar fichas.</div>';
+    lista.innerHTML = `<div class="historico-vazio">Erro ao carregar fichas: ${e.message}</div>`;
   }
+}
+
+function renderizarFiltroCategorias(categorias, total) {
+  const wrap = document.getElementById('categoria-filtros');
+  if (!wrap) return;
+
+  if (!categorias.length) {
+    wrap.innerHTML = '';
+    return;
+  }
+
+  const chips = [`<button class="cat-chip ${!categoriaFiltro ? 'active' : ''}" onclick="filtrarCategoria(null)">Todas (${total})</button>`]
+    .concat(categorias.map(c => {
+      const count = (window._fichasCache || []).filter(f => (f.categoria || 'Sem categoria') === c).length;
+      return `<button class="cat-chip ${categoriaFiltro === c ? 'active' : ''}" onclick="filtrarCategoria('${c.replace(/'/g, "\\'")}')">${escapeHtml(c)} (${count})</button>`;
+    }));
+
+  wrap.innerHTML = chips.join('');
+}
+
+function filtrarCategoria(cat) {
+  categoriaFiltro = cat;
+  const fichas = window._fichasCache || [];
+  const categorias = [...new Set(fichas.map(f => f.categoria || 'Sem categoria'))].sort();
+  renderizarFiltroCategorias(categorias, fichas.length);
+  renderizarListaFichas(fichas);
+}
+
+function renderizarListaFichas(fichas) {
+  const lista = document.getElementById('historico-lista');
+
+  const filtradas = categoriaFiltro
+    ? fichas.filter(f => (f.categoria || 'Sem categoria') === categoriaFiltro)
+    : fichas;
+
+  document.getElementById('historico-count').textContent = `${filtradas.length} ficha${filtradas.length !== 1 ? 's' : ''}`;
+
+  if (!fichas.length) {
+    lista.innerHTML = '<div class="historico-vazio">📂 Nenhuma ficha salva ainda.<br>Gere e salve sua primeira ficha!</div>';
+    return;
+  }
+
+  if (!filtradas.length) {
+    lista.innerHTML = '<div class="historico-vazio">Nenhuma ficha nessa categoria.</div>';
+    return;
+  }
+
+  lista.innerHTML = filtradas.map(f => `
+    <div class="ficha-item">
+      <div class="ficha-item-info">
+        <div class="ficha-item-nome">${escapeHtml(f.nome_produto)}</div>
+        <div class="ficha-item-meta">
+          <span class="cat-tag">${escapeHtml(f.categoria || 'Sem categoria')}</span>
+          ${f.marca ? ' · ' + escapeHtml(f.marca) : ''} · ${f.formato?.toUpperCase() || ''} · ${new Date(f.created_at).toLocaleDateString('pt-BR')}
+        </div>
+      </div>
+      <div class="ficha-item-actions">
+        <button class="ficha-ver-btn" onclick="verFicha(${f.id})">Ver</button>
+        <button class="ficha-del-btn" onclick="apagarFicha(${f.id}, this)">✕</button>
+      </div>
+    </div>
+  `).join('');
 }
 
 function verFicha(id) {
@@ -1768,6 +1871,8 @@ async function salvarFicha() {
   const ean = document.getElementById('ean-input').value.trim();
   const nome = fichasGeradas[0]?.titulo || document.getElementById('nome-input').value.trim() || 'Produto';
   const marca = fichasGeradas[0]?.marca || document.getElementById('marca-input').value.trim() || '';
+  const categoria = fichasGeradas[0]?.categoria || 'Sem categoria';
+  const imagensSugeridas = fichasGeradas[0]?.imagens_sugeridas || fichasGeradas.find(f => f.imagens_sugeridas)?.imagens_sugeridas || [];
   const ml = fichasGeradas.find(f => f._tipo === 'ml');
   const shopee = fichasGeradas.find(f => f._tipo === 'shopee');
 
@@ -1780,10 +1885,13 @@ async function salvarFicha() {
         marca,
         ean,
         formato,
+        categoria,
+        imagens_sugeridas: JSON.stringify(imagensSugeridas),
         conteudo_ml: ml ? JSON.stringify(ml) : null,
         conteudo_shopee: shopee ? JSON.stringify(shopee) : null
       })
     });
+    const data = await r.json().catch(() => ({}));
     if (r.ok) {
       btn.textContent = '✓ Salvo!';
       btn.classList.add('salvo');
@@ -1793,12 +1901,12 @@ async function salvarFicha() {
         btn.disabled = false;
       }, 2500);
     } else {
-      throw new Error('Erro ao salvar');
+      throw new Error(data.error || 'Erro ao salvar');
     }
   } catch(e) {
     btn.disabled = false;
     btn.textContent = '💾 Salvar no histórico';
-    alert('Erro ao salvar ficha. Tente novamente.');
+    alert('Erro ao salvar ficha: ' + e.message);
   }
 }
 
