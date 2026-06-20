@@ -1,3 +1,12 @@
+function getUserIdFromToken(token) {
+  try {
+    const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    return payload.sub;
+  } catch (e) {
+    return null;
+  }
+}
+
 export default async function handler(req, res) {
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
@@ -5,19 +14,23 @@ export default async function handler(req, res) {
   const token = req.headers.authorization?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ error: 'Não autenticado' });
 
+  const userId = getUserIdFromToken(token);
+  if (!userId) return res.status(401).json({ error: 'Token inválido' });
+
   const headers = {
     'Content-Type': 'application/json',
     'apikey': SUPABASE_ANON_KEY,
     'Authorization': `Bearer ${token}`
   };
 
-  // GET — listar fichas em ordem alfabética
+  // GET — listar fichas, opcionalmente filtradas por categoria, ordenadas alfabeticamente
   if (req.method === 'GET') {
     try {
-      const response = await fetch(
-        `${SUPABASE_URL}/rest/v1/fichas?select=*&order=nome_produto.asc`,
-        { headers }
-      );
+      const categoria = req.query.categoria;
+      let url = `${SUPABASE_URL}/rest/v1/fichas?select=*&order=nome_produto.asc`;
+      if (categoria) url += `&categoria=eq.${encodeURIComponent(categoria)}`;
+
+      const response = await fetch(url, { headers });
       const data = await response.json();
       if (!response.ok) return res.status(response.status).json({ error: data?.message || 'Erro ao buscar fichas' });
       return res.status(200).json(data);
@@ -28,7 +41,7 @@ export default async function handler(req, res) {
 
   // POST — salvar ficha
   if (req.method === 'POST') {
-    const { nome_produto, marca, ean, formato, conteudo_ml, conteudo_shopee } = req.body;
+    const { nome_produto, marca, ean, formato, categoria, conteudo_ml, conteudo_shopee, imagens_sugeridas } = req.body;
 
     if (!nome_produto) return res.status(400).json({ error: 'Nome do produto obrigatório' });
 
@@ -36,7 +49,17 @@ export default async function handler(req, res) {
       const response = await fetch(`${SUPABASE_URL}/rest/v1/fichas`, {
         method: 'POST',
         headers: { ...headers, 'Prefer': 'return=representation' },
-        body: JSON.stringify({ nome_produto, marca, ean, formato, conteudo_ml, conteudo_shopee })
+        body: JSON.stringify({
+          user_id: userId,
+          nome_produto,
+          marca,
+          ean,
+          formato,
+          categoria: categoria || 'Sem categoria',
+          conteudo_ml,
+          conteudo_shopee,
+          imagens_sugeridas
+        })
       });
       const data = await response.json();
       if (!response.ok) return res.status(response.status).json({ error: data?.message || 'Erro ao salvar' });
