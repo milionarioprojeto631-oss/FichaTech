@@ -1552,8 +1552,6 @@ Use seu conhecimento sobre o produto para preencher todas as informações técn
       document.getElementById('loading').classList.remove('visible');
       const area = document.getElementById('result-area');
 
-      area.innerHTML += renderPreviewVisual(results);
-
       results.forEach((r, idx) => {
         area.innerHTML += renderFicha(r, idx);
       });
