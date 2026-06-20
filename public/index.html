@@ -3,23 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FichaTech — Gerador de Ficha Técnica</title>
+<title>BIGODtech — Gerador de Ficha Técnica</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
 
   :root {
-    --primary: #a9745a;
-    --primary-dark: #8a5c45;
-    --primary-light: #c4977c;
-    --accent: #f39c12;
-    --bg: #f4f6f9;
-    --surface: #ffffff;
-    --border: #e1e6ed;
-    --text: #1c2b3a;
-    --muted: #6b7c93;
-    --success: #1ea672;
+    --primary: #FFC107;
+    --primary-dark: #E0A800;
+    --primary-light: #FFD54F;
+    --accent: #FFC107;
+    --bg: #0d0d0d;
+    --surface: #1a1a1a;
+    --surface-2: #232323;
+    --border: #333333;
+    --text: #f5f5f5;
+    --muted: #9a9a9a;
+    --success: #2ecc71;
     --ml: #ffe600;
     --shopee: #ee4d2d;
+    --amazon-clr: #FF9900;
     --radius: 12px;
   }
 
@@ -28,18 +30,34 @@
   body {
     font-family: 'Inter', sans-serif;
     background: var(--bg);
+    background-image:
+      radial-gradient(circle at 8% 12%, rgba(255,193,7,0.05) 0%, transparent 35%),
+      radial-gradient(circle at 92% 80%, rgba(255,193,7,0.04) 0%, transparent 40%);
+    background-attachment: fixed;
     color: var(--text);
     min-height: 100vh;
     padding: 0 0 60px;
   }
 
-  /* Header — estilo Macedo */
+  /* Header — BIGODtech */
   header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
     color: #fff;
     padding: 28px 20px 32px;
     text-align: center;
-    box-shadow: 0 4px 16px rgba(169,116,90,0.25);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    border-bottom: 2px solid var(--primary);
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><g fill="%23FFC107" opacity="0.04"><circle cx="20" cy="20" r="3"/><circle cx="60" cy="40" r="2"/><circle cx="100" cy="15" r="2.5"/><rect x="30" y="80" width="14" height="14" rx="2"/><rect x="80" y="60" width="10" height="10" rx="2"/><path d="M50 90 L60 80 L70 90 L60 100 Z"/></g></svg>');
+    background-size: 140px 140px;
+    pointer-events: none;
   }
 
   .logo {
@@ -47,21 +65,56 @@
     font-weight: 700;
     letter-spacing: 3px;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--primary);
     margin-bottom: 6px;
+    position: relative;
   }
 
   header h1 {
     font-size: clamp(20px, 5vw, 28px);
     font-weight: 800;
     line-height: 1.2;
+    position: relative;
+    color: #fff;
   }
 
   header p {
-    color: rgba(255,255,255,0.75);
+    color: rgba(255,255,255,0.65);
     margin-top: 6px;
     font-size: 13px;
+    position: relative;
   }
+
+  .bigode-badge {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 4px;
+    position: relative;
+  }
+
+  .bigode-svg {
+    width: 84px;
+    height: 42px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+  }
+
+  .bigode-text {
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: var(--primary);
+    text-shadow: 0 2px 8px rgba(255,193,7,0.3);
+  }
+
+  .bigode-text .tech-part {
+    color: #fff;
+    font-weight: 800;
+  }
+
+  .login-logo .bigode-svg { width: 96px; height: 48px; }
+  .login-logo .bigode-text { font-size: 30px; }
 
   .container {
     padding: 20px 16px;
@@ -95,28 +148,29 @@
     display: block;
   }
 
-  input[type="text"] {
+  input[type="text"], input[type="email"], input[type="password"] {
     width: 100%;
-    background: #fdfbfa;
-    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    border: 1.5px solid var(--primary);
     border-radius: 10px;
     padding: 13px 14px;
-    color: var(--text);
+    color: var(--primary);
     font-family: 'Inter', sans-serif;
     font-size: 15px;
+    font-weight: 600;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
     -webkit-appearance: none;
   }
 
-  input[type="text"]:focus {
+  input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
     border-color: var(--primary-light);
-    box-shadow: 0 0 0 3px rgba(196,151,124,0.18);
+    box-shadow: 0 0 0 3px rgba(255,193,7,0.22);
   }
 
-  input[type="text"]::placeholder {
-    color: var(--muted);
-    opacity: 0.7;
+  input[type="text"]::placeholder, input[type="email"]::placeholder, input[type="password"]::placeholder {
+    color: rgba(255,193,7,0.4);
+    opacity: 1;
   }
 
   .scanner-btn {
@@ -124,7 +178,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background: #f7efe9;
+    background: var(--surface-2);
     border: 1.5px dashed var(--primary-light);
     border-radius: 10px;
     padding: 13px 14px;
@@ -138,7 +192,7 @@
   }
 
   .scanner-btn:hover {
-    background: #f0e3da;
+    background: #2a2a2a;
   }
 
   .format-toggle {
@@ -149,10 +203,14 @@
   }
 
   .format-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
     padding: 11px 6px;
     border-radius: 8px;
     border: 1.5px solid var(--border);
-    background: #fff;
+    background: var(--surface-2);
     color: var(--muted);
     font-size: 12.5px;
     font-weight: 700;
@@ -161,27 +219,34 @@
     font-family: 'Inter', sans-serif;
   }
 
+  .plat-logo {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
   .format-btn.ml.active {
-    border-color: #d4b800;
-    background: #fffbe0;
-    color: #8a7600;
+    border-color: #ffe600;
+    background: rgba(255,230,0,0.1);
+    color: #ffe600;
   }
 
   .format-btn.shopee.active {
     border-color: var(--shopee);
-    background: #fff0ed;
+    background: rgba(238,77,45,0.12);
     color: var(--shopee);
   }
 
   .format-btn.amazon.active {
-    border-color: #ff9900;
-    background: #fff4e0;
-    color: #b36b00;
+    border-color: var(--amazon-clr);
+    background: rgba(255,153,0,0.12);
+    color: var(--amazon-clr);
   }
 
   .format-btn.ambos.active {
     border-color: var(--primary);
-    background: #f3e7df;
+    background: rgba(255,193,7,0.14);
     color: var(--primary);
   }
 
@@ -189,7 +254,7 @@
     width: 100%;
     padding: 16px;
     background: var(--primary);
-    color: #fff;
+    color: #000;
     border: none;
     border-radius: 10px;
     font-size: 16px;
@@ -198,7 +263,7 @@
     transition: all 0.2s;
     font-family: 'Inter', sans-serif;
     letter-spacing: 0.3px;
-    box-shadow: 0 4px 12px rgba(169,116,90,0.25);
+    box-shadow: 0 4px 16px rgba(255,193,7,0.3);
   }
 
   .generate-btn:hover:not(:disabled) {
@@ -365,15 +430,15 @@
     border-radius: 20px;
   }
 
-  .tag-ml { background: #fff8d6; color: #8a7600; }
-  .tag-shopee { background: #ffe6e0; color: var(--shopee); }
-  .tag-amazon { background: #fff1d6; color: #b36b00; }
+  .tag-ml { background: rgba(255,230,0,0.15); color: #ffe600; }
+  .tag-shopee { background: rgba(238,77,45,0.15); color: var(--shopee); }
+  .tag-amazon { background: rgba(255,153,0,0.15); color: var(--amazon-clr); }
 
   .copy-btn {
     display: flex;
     align-items: center;
     gap: 6px;
-    background: #fff;
+    background: var(--surface-2);
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 8px 14px;
@@ -399,9 +464,10 @@
   }
 
   .ficha-banner {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-    color: #fff;
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+    color: var(--primary);
     padding: 18px 20px;
+    border-bottom: 2px solid var(--primary);
   }
 
   .ficha-titulo {
@@ -444,13 +510,13 @@
   }
 
   .destaque-item {
-    background: #f7efe9;
-    border: 1px solid #e8d8cc;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
     border-radius: 10px;
     padding: 12px 14px;
     font-size: 13.5px;
     font-weight: 600;
-    color: var(--primary-dark);
+    color: var(--primary-light);
     display: flex;
     gap: 8px;
     align-items: flex-start;
@@ -491,13 +557,13 @@
 
   .specs-table td:first-child {
     font-weight: 700;
-    color: var(--primary-dark);
+    color: var(--primary-light);
     width: 42%;
     white-space: nowrap;
   }
 
   .specs-table tr:nth-child(even) {
-    background: #fafbfd;
+    background: var(--surface-2);
   }
 
   .lista-itens {
@@ -537,7 +603,7 @@
   }
 
   .tag-pill {
-    background: #f5ece5;
+    background: var(--surface-2);
     color: var(--primary-dark);
     font-size: 12px;
     font-weight: 600;
@@ -548,13 +614,13 @@
 
   .cta-box {
     margin-top: 4px;
-    background: linear-gradient(135deg, #fff8e6 0%, #fff0d4 100%);
-    border: 1.5px solid var(--accent);
+    background: linear-gradient(135deg, rgba(255,193,7,0.18) 0%, rgba(255,193,7,0.08) 100%);
+    border: 1.5px solid var(--primary);
     border-radius: 10px;
     padding: 14px 16px;
     font-size: 14px;
     font-weight: 700;
-    color: #8a5a00;
+    color: var(--primary);
     text-align: center;
     line-height: 1.5;
   }
@@ -589,8 +655,8 @@
     line-height: 1.4;
   }
 
-  .score-criterio.ok { color: #15803d; }
-  .score-criterio.no { color: #9a3b35; opacity: 0.85; }
+  .score-criterio.ok { color: #4ade80; }
+  .score-criterio.no { color: #f87171; opacity: 0.85; }
 
   .score-criterio span:first-child {
     font-weight: 800;
@@ -631,7 +697,7 @@
 
   .raw-box {
     display: none;
-    background: #f7f9fc;
+    background: var(--surface-2);
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 16px;
@@ -652,7 +718,7 @@
     width: 100%;
     margin: 0 auto;
     padding: 14px;
-    background: #fff;
+    background: var(--surface-2);
     border: 1.5px solid var(--border);
     border-radius: 10px;
     color: var(--primary);
@@ -663,14 +729,14 @@
     font-family: 'Inter', sans-serif;
   }
 
-  .new-btn:hover { border-color: var(--primary-light); background: #f7efe9; }
+  .new-btn:hover { border-color: var(--primary-light); background: var(--surface-2); }
 
   .error-msg {
-    background: #fdecec;
+    background: rgba(192,57,43,0.15);
     border: 1px solid #f5c2c2;
     border-radius: 10px;
     padding: 16px;
-    color: #c0392b;
+    color: #f87171;
     font-size: 14px;
     text-align: center;
     display: none;
@@ -683,7 +749,7 @@
   .img-upload-area {
     border: 2px dashed var(--primary-light);
     border-radius: 10px;
-    background: #f7efe9;
+    background: var(--surface-2);
     padding: 20px 14px;
     text-align: center;
     cursor: pointer;
@@ -692,7 +758,7 @@
   }
 
   .img-upload-area:hover, .img-upload-area.drag-over {
-    background: #f0e3da;
+    background: #2a2a2a;
     border-color: var(--primary);
   }
 
@@ -737,7 +803,7 @@
     width: 100%;
     max-height: 200px;
     object-fit: contain;
-    background: #fafafa;
+    background: var(--surface-2);
     display: block;
   }
 
@@ -746,7 +812,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 8px 12px;
-    background: #f7efe9;
+    background: var(--surface-2);
     border-top: 1px solid var(--border);
   }
 
@@ -763,7 +829,7 @@
   .img-remove-btn {
     background: none;
     border: none;
-    color: #c0392b;
+    color: #f87171;
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
@@ -772,7 +838,7 @@
     border-radius: 6px;
   }
 
-  .img-remove-btn:hover { background: #fdecec; }
+  .img-remove-btn:hover { background: rgba(192,57,43,0.15); }
 
   .img-analyzing {
     display: none;
@@ -782,7 +848,7 @@
     color: var(--primary);
     font-weight: 600;
     padding: 6px 12px;
-    background: #f3e7df;
+    background: rgba(255,193,7,0.12);
     border-top: 1px solid var(--border);
   }
 
@@ -796,7 +862,7 @@
     color: var(--success);
     font-weight: 700;
     padding: 6px 12px;
-    background: #edfbf4;
+    background: rgba(46,204,113,0.15);
     border-top: 1px solid #b6e8d0;
   }
 
@@ -856,33 +922,33 @@
   }
 
   .login-tab.active {
-    background: var(--surface);
+    background: var(--surface-2);
     color: var(--primary);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
   }
 
   .login-btn {
     width: 100%;
     background: var(--primary);
-    color: #fff;
+    color: #000;
     border: none;
     border-radius: 10px;
     padding: 14px;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 800;
     font-family: 'Inter', sans-serif;
     cursor: pointer;
     margin-top: 4px;
     transition: background 0.15s;
   }
 
-  .login-btn:hover { background: var(--primary-dark); }
+  .login-btn:hover { background: var(--primary-light); }
   .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
   .login-error {
-    background: #fdf0ef;
+    background: rgba(192,57,43,0.12);
     border: 1px solid #f5c6c2;
-    color: #c0392b;
+    color: #f87171;
     border-radius: 8px;
     padding: 10px 14px;
     font-size: 13px;
@@ -976,20 +1042,20 @@
 
   .ficha-ver-btn {
     background: var(--primary);
-    color: #fff;
+    color: #000;
     border: none;
     border-radius: 7px;
     padding: 6px 12px;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     font-family: 'Inter', sans-serif;
   }
 
   .ficha-del-btn {
-    background: #fdf0ef;
-    color: #c0392b;
-    border: 1px solid #f5c6c2;
+    background: rgba(192,57,43,0.15);
+    color: #f87171;
+    border: 1px solid rgba(192,57,43,0.4);
     border-radius: 7px;
     padding: 6px 10px;
     font-size: 12px;
@@ -1028,13 +1094,13 @@
   .cat-chip.active {
     background: var(--primary);
     border-color: var(--primary);
-    color: #fff;
+    color: #000;
   }
 
   .cat-tag {
     display: inline-block;
-    background: #f3e7df;
-    color: var(--primary-dark);
+    background: rgba(255,193,7,0.12);
+    color: var(--primary);
     font-size: 10.5px;
     font-weight: 700;
     padding: 1px 7px;
@@ -1102,7 +1168,12 @@
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">
-      <div class="logo">⚡ FichaTech</div>
+      <div class="bigode-badge">
+        <svg viewBox="0 0 100 50" class="bigode-svg">
+          <path d="M5,30 Q15,8 30,18 Q38,10 50,16 Q62,10 70,18 Q85,8 95,30 Q85,22 75,26 Q68,16 58,22 Q50,16 42,22 Q32,16 25,26 Q15,22 5,30 Z" fill="#000"/>
+        </svg>
+        <span class="bigode-text">BIGOD<span class="tech-part">tech</span></span>
+      </div>
       <h2>Bem-vindo</h2>
       <p>Faça login para acessar o sistema</p>
     </div>
@@ -1134,7 +1205,12 @@
     <button class="logout-btn" onclick="fazerLogout()">Sair</button>
   </div>
   <div style="padding: 20px 20px 24px; text-align: center;">
-    <div class="logo">⚡ FichaTech</div>
+    <div class="bigode-badge">
+      <svg viewBox="0 0 100 50" class="bigode-svg">
+        <path d="M5,30 Q15,8 30,18 Q38,10 50,16 Q62,10 70,18 Q85,8 95,30 Q85,22 75,26 Q68,16 58,22 Q50,16 42,22 Q32,16 25,26 Q15,22 5,30 Z" fill="#000"/>
+      </svg>
+      <span class="bigode-text">BIGOD<span class="tech-part">tech</span></span>
+    </div>
     <h1>Gerador de Ficha Técnica</h1>
     <p>Informe o código EAN, foto ou nome do produto e gere sua ficha profissional em segundos</p>
   </div>
@@ -1190,10 +1266,10 @@
 
   <label style="margin-bottom:8px">Formato da ficha</label>
   <div class="format-toggle">
-    <button class="format-btn ml active" onclick="setFormato('ml')">🛒 Mercado Livre</button>
-    <button class="format-btn shopee" onclick="setFormato('shopee')">🛍️ Shopee</button>
-    <button class="format-btn amazon" onclick="setFormato('amazon')">📦 Amazon</button>
-    <button class="format-btn ambos" onclick="setFormato('ambos')">✦ Todas</button>
+    <button class="format-btn ml active" onclick="setFormato('ml')"><img src="https://cdn.simpleicons.org/mercadopago/FFE600" class="plat-logo" alt="ML"><span>Mercado Livre</span></button>
+    <button class="format-btn shopee" onclick="setFormato('shopee')"><img src="https://cdn.simpleicons.org/shopee/EE4D2D" class="plat-logo" alt="Shopee"><span>Shopee</span></button>
+    <button class="format-btn amazon" onclick="setFormato('amazon')"><img src="https://cdn.simpleicons.org/amazon/FF9900" class="plat-logo" alt="Amazon"><span>Amazon</span></button>
+    <button class="format-btn ambos" onclick="setFormato('ambos')">✦ <span>Todas</span></button>
   </div>
 
   <button class="generate-btn" onclick="gerarFicha()">Gerar Ficha Técnica</button>
@@ -1682,8 +1758,8 @@ function renderFicha(r, idx) {
   let scoreHtml = '';
   if (d.score_qualidade && typeof d.score_qualidade.nota === 'number') {
     const nota = Math.max(0, Math.min(100, d.score_qualidade.nota));
-    const corNota = nota >= 80 ? '#15803d' : nota >= 50 ? '#b45309' : '#c0392b';
-    const corBg = nota >= 80 ? '#ecfdf5' : nota >= 50 ? '#fffbeb' : '#fdf0ef';
+    const corNota = nota >= 80 ? '#4ade80' : nota >= 50 ? '#fbbf24' : '#f87171';
+    const corBg = nota >= 80 ? 'rgba(46,204,113,0.1)' : nota >= 50 ? 'rgba(255,193,7,0.1)' : 'rgba(192,57,43,0.1)';
     const criteriosHtml = (d.score_qualidade.criterios || []).map(c =>
       `<div class="score-criterio ${c.atendido ? 'ok' : 'no'}"><span>${c.atendido ? '✓' : '✕'}</span><span>${escapeHtml(c.item)}</span></div>`
     ).join('');
